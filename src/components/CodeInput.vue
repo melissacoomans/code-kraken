@@ -65,7 +65,8 @@
 
     <v-btn color="error" class="mr-4" @click="reset"> Clear Form </v-btn>
 
-    <span v-if="validatetext">{{ validatetext }}</span>
+    <span v-if="!checkCodes && validateText">{{ validateText }}</span>
+    <span v-if="feedbackText">{{ feedbackText }}</span>
   </v-form>
 </template>
 
@@ -75,34 +76,48 @@ export default {
 
   data: () => ({
     valid: true,
+    winningCode: '12345',
+    feedbackText: '',
     name: '',
-    validatetext: '',
+    validateText: '',
     codeRules: [(v) => !!v || 'code is required'],
     firstInput: '',
     secondInput: '',
     thirdInput: '',
     fourthInput: '',
     fifthInput: '',
-    combinedCodes: '',
+    combinedInputCodes: '',
   }),
   methods: {
     combineInputCodes: function () {
-      this.combinedCodes = this.firstInput.concat(
+      this.combinedInputCodes = this.firstInput.concat(
         this.secondInput,
         this.thirdInput,
         this.fourthInput,
         this.fifthInput
       );
     },
+    checkCodes: function () {
+      if (this.combinedInputCodes === this.winningCode) {
+        return (this.feedbackText = 'yay you are a winner');
+      } else {
+        return (this.feedbackText = 'booo try again!');
+      }
+    },
+    clearForm() {
+      this.feedbackText = '';
+      this.validatedCodeText = '';
+    },
     validate() {
       this.$refs.form.validate();
       this.combineInputCodes();
-      return (this.validatetext =
-        `gevalideerd! met cijfers: ` + this.combinedCodes);
+      this.checkCodes();
+      return (this.validatedCodeText =
+        `gevalideerd! met cijfers: ` + this.combinedInputCodes);
     },
     reset() {
+      this.clearForm();
       this.$refs.form.reset();
-      return (this.validatetext = '');
     },
   },
 };
