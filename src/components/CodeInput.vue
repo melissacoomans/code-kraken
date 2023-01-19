@@ -83,21 +83,22 @@ export default {
     thirdInput: '',
     fourthInput: '',
     fifthInput: '',
-    // combinedInputCode: this.firstInput.concat(
-    //   this.secondInput,
-    //   this.thirdInput,
-    //   this.fourthInput,
-    //   this.fifthInput
-    // ),
+    combinedCodes: '',
   }),
   methods: {
+    combineInputCodes: function () {
+      this.combinedCodes = this.firstInput.concat(
+        this.secondInput,
+        this.thirdInput,
+        this.fourthInput,
+        this.fifthInput
+      );
+    },
     validate() {
       this.$refs.form.validate();
-      // this.combinedInputCode();
-      // return (this.validatetext =
-      //   `gevalideerd! met cijfers: ` + this.combinedInputCode);
+      this.combineInputCodes();
       return (this.validatetext =
-        `gevalideerd! met cijfers: ` + this.firstInput);
+        `gevalideerd! met cijfers: ` + this.combinedCodes);
     },
     reset() {
       this.$refs.form.reset();
