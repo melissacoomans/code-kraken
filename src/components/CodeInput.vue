@@ -1,8 +1,8 @@
 <template>
-  <!-- oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" -->
   <v-form ref="form" v-model="valid" lazy-validation class="text-center">
     <!-- <v-col cols="12" sm="6" md="3"> -->
-    <v-col>
+    <v-col cols="5" sm="5" md="2">
+      <!-- maxlength werkt niet icm number, daarom gekozen voor text. TODO: nog oplossing voor alleen numbers en overspringen naar volgende input -->
       <v-text-field
         v-for="index in 5"
         :key="index"
@@ -55,17 +55,15 @@ export default {
     feedbackText: '',
     validateText: '',
     codeRules: [(v) => !!v || 'code is required'],
-    inputCodesCombined: '',
+    inputValuesCombined: '',
     winningCodesCombined: '',
     validatedCodeText: '',
+    totalCorrect: 0,
   }),
   methods: {
-    submitForm() {
-      this.inputValues.forEach((element) => console.log(element));
-    },
-    combineInputCodes: function () {
+    combineInputValues: function () {
       if (this.inputValues[0] !== (null || undefined)) {
-        return (this.inputCodesCombined = this.inputValues[0].concat(
+        return (this.inputValuesCombined = this.inputValues[0].concat(
           this.inputValues[1],
           this.inputValues[2],
           this.inputValues[3],
@@ -84,22 +82,28 @@ export default {
       }
     },
     checkCodes: function () {
-      if (this.inputCodesCombined === this.winningCodesCombined) {
+      if (this.inputValuesCombined === this.winningCodesCombined) {
         return (this.feedbackText = 'yay you are a winner');
       } else {
-        return (this.feedbackText = 'booo try again!');
+        this.totalCorrect = 0;
+        for (var i = 0; i < 5; i++) {
+          if (this.inputValues[i] === this.winningCode[i]) {
+            this.totalCorrect++;
+          }
+        }
+        this.validatedCodeText = `gevalideerd! met cijfers: ${this.inputValuesCombined}`;
+        this.feedbackText = `je hebt er ${this.totalCorrect} goed! probeer het nog een keer`;
+        return this.totalCorrect;
       }
     },
     clearForm() {
-      this.feedbackText = '';
-      this.validatedCodeText = '';
+      this.feedbackText = undefined;
+      this.validatedCodeText = undefined;
     },
     validate() {
       this.$refs.form.validate();
-      this.submitForm();
-      this.combineInputCodes();
+      this.combineInputValues();
       this.checkCodes();
-      return (this.validatedCodeText = `gevalideerd! met cijfers: ${this.inputValues} = ${this.inputCodesCombined}`);
     },
     reset() {
       this.clearForm();
