@@ -22,19 +22,19 @@
     </v-btn>
 
     <v-btn color="error" class="mr-4" @click="reset"> Clear Form </v-btn>
+    <!-- <br />
     <br />
-    <br />
-    <span v-if="validatedCodeText">{{ validatedCodeText }}</span>
+    <span v-if="validatedCodeText">{{ validatedCodeText }}</span> -->
     <br />
     <br />
     <span v-if="feedbackText">{{ feedbackText }}</span>
+    <!-- <br />
+    <br />
+    <span>winnende code: {{ winningCodesCombined }}</span> -->
     <br />
     <br />
-    <span>winnende code: {{ winningCodesCombined }}</span>
-    <br />
-    <br />
-    <!-- <span>eerdere submitted codes: </span>
-    <span v-for="code in submittedCodes" :key="code">{{ code }}</span> -->
+    <span><b>This is your code history: </b></span>
+    <span v-for="code in storedInputValues" :key="code">{{ code }}, </span>
 
     <!-- <span v-for="number in winningCode" :key="number">{{ number }}</span> -->
   </v-form>
@@ -51,6 +51,7 @@ export default {
     submittedCodes: ['99999'],
     storedInputValues: [],
     chosenInputValues: [],
+    possibleCodes: [],
     winningCode: ['1', '2', '3', '4', '5'],
     feedbackText: '',
     codeRules: [(v) => !!v || 'code is required'],
@@ -90,10 +91,11 @@ export default {
             this.totalCorrect++;
           }
         }
-        this.feedbackText = `je hebt er ${this.totalCorrect} goed! probeer het nog een keer`;
+        this.feedbackText = `Je hebt er ${this.totalCorrect} goed! probeer het nog een keer`;
         return this.totalCorrect;
       }
     },
+    verifyPossibleCodes: function () {},
     storeInputCodes: function () {
       if (window.localStorage) {
         this.storedInputValues.push(this.inputValuesCombined);
@@ -109,11 +111,12 @@ export default {
     validate() {
       this.$refs.form.validate();
       this.combineInputValues();
-      this.checkCodes();
       this.storeInputCodes();
-      if (this.inputValuesCombined !== '') {
-        this.validatedCodeText = `gevalideerd! met cijfers: ${this.inputValuesCombined}`;
-      }
+      this.checkCodes();
+      this.verifyPossibleCodes();
+      // if (this.inputValuesCombined !== '') {
+      //   this.validatedCodeText = `gevalideerd! met cijfers: ${this.inputValuesCombined}`;
+      // }
     },
     reset() {
       this.clearForm();
