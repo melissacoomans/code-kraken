@@ -8,7 +8,7 @@
         :key="index"
         :rules="codeRules"
         :maxlength="1"
-        v-model="inputValues[index - 1]"
+        v-model="chosenInputValues[index - 1]"
         type="text"
         pattern="[0-9]{1}"
         outlined
@@ -49,10 +49,10 @@ export default {
   data: () => ({
     valid: true,
     submittedCodes: ['99999'],
-    inputValues: [],
+    storedInputValues: [],
+    chosenInputValues: [],
     winningCode: ['1', '2', '3', '4', '5'],
     feedbackText: '',
-    validateText: '',
     codeRules: [(v) => !!v || 'code is required'],
     inputValuesCombined: '',
     winningCodesCombined: '',
@@ -61,12 +61,12 @@ export default {
   }),
   methods: {
     combineInputValues: function () {
-      if (this.inputValues[0] !== (null || undefined)) {
-        return (this.inputValuesCombined = this.inputValues[0].concat(
-          this.inputValues[1],
-          this.inputValues[2],
-          this.inputValues[3],
-          this.inputValues[4]
+      if (this.chosenInputValues[0] !== (null || undefined)) {
+        return (this.inputValuesCombined = this.chosenInputValues[0].concat(
+          this.chosenInputValues[1],
+          this.chosenInputValues[2],
+          this.chosenInputValues[3],
+          this.chosenInputValues[4]
         ));
       }
     },
@@ -82,17 +82,24 @@ export default {
     },
     checkCodes: function () {
       if (this.inputValuesCombined === this.winningCodesCombined) {
-        return (this.feedbackText = 'yay you are a winner');
+        return (this.feedbackText = 'yay you are a winner!!');
       } else {
         this.totalCorrect = 0;
         for (var i = 0; i < 5; i++) {
-          if (this.inputValues[i] === this.winningCode[i]) {
+          if (this.chosenInputValues[i] === this.winningCode[i]) {
             this.totalCorrect++;
           }
         }
-        this.validatedCodeText = `gevalideerd! met cijfers: ${this.inputValuesCombined}`;
         this.feedbackText = `je hebt er ${this.totalCorrect} goed! probeer het nog een keer`;
         return this.totalCorrect;
+      }
+    },
+    storeInputCodes: function () {
+      if (window.localStorage) {
+        this.storedInputValues.push(this.inputValuesCombined);
+        localStorage.setItem('Code history', this.storedInputValues);
+      } else {
+        return;
       }
     },
     clearForm() {
@@ -103,6 +110,10 @@ export default {
       this.$refs.form.validate();
       this.combineInputValues();
       this.checkCodes();
+      this.storeInputCodes();
+      if (this.inputValuesCombined !== '') {
+        this.validatedCodeText = `gevalideerd! met cijfers: ${this.inputValuesCombined}`;
+      }
     },
     reset() {
       this.clearForm();
@@ -115,7 +126,8 @@ export default {
 .v-input {
   display: inline-block;
   padding: 6px;
-  max-width: 5%;
+  // max-width: 5%;
+  max-width: 20%;
 }
 .v-text-field.v-text-field--enclosed {
   padding: 6px;

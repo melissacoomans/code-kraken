@@ -8,6 +8,7 @@
           </v-col>
         </v-row>
         <CodeInput />
+        <OptionalCodes />
       </v-container>
     </v-main>
   </v-app>
@@ -15,12 +16,14 @@
 
 <script>
 import CodeInput from './components/CodeInput';
+import OptionalCodes from './components/OptionalCodes.vue';
 
 export default {
   name: 'App',
 
   components: {
     CodeInput,
+    OptionalCodes,
   },
 
   data: () => ({
