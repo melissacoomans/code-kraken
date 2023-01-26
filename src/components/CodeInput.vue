@@ -112,20 +112,21 @@ export default {
     },
     getAllPossibleCodes: function () {
       for (let i = 0; i <= 99999; i++) {
-        console.log(i.toString().length, 'length 1');
-        if (i.toString().length === 1) {
-          this.possibleCodes.push('0000' + i);
-        }
-        if (i.toString().length === 2) {
-          this.possibleCodes.push('000' + i);
-        }
-        if (i.toString().length === 3) {
-          this.possibleCodes.push('00' + i);
-        }
-        if (i.toString().length === 4) {
-          this.possibleCodes.push('0' + i);
-        } else {
-          this.possibleCodes.push(i);
+        switch (true) {
+          case i.toString().length === 1:
+            this.possibleCodes.push('0000' + i);
+            break;
+          case i.toString().length === 2:
+            this.possibleCodes.push('000' + i);
+            break;
+          case i.toString().length === 3:
+            this.possibleCodes.push('00' + i);
+            break;
+          case i.toString().length === 4:
+            this.possibleCodes.push('0' + i);
+            break;
+          case i.toString().length === 5:
+            this.possibleCodes.push(i);
         }
       }
       // daarna verifieren tegen ingevulde codes en alleen tonen welke nog niet zijn ingevuld
@@ -141,12 +142,11 @@ export default {
       this.validatedCodeText = undefined;
     },
     validate() {
-      // this.$refs.form.validate();
-      // this.combineInputValues();
-      // this.storeInputCodes();
-      // this.checkCodes();
-      // this.showCodeHistory();
-      // this.verifyPossibleCodes();
+      this.$refs.form.validate();
+      this.combineInputValues();
+      this.storeInputCodes();
+      this.checkCodes();
+      this.showCodeHistory();
       // if (this.inputValuesCombined !== '') {
       //   this.validatedCodeText = `gevalideerd! met cijfers: ${this.inputValuesCombined}`;
       // }
