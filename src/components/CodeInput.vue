@@ -49,11 +49,15 @@
 </template>
 
 <script>
+export const CODE_HISTORY = 'Code history';
+export const WINNER_TEXT = 'yay you are a winner!!';
+export const TRY_AGAIN_TEXT = `numbers are correct! please try again`;
+
 export default {
   name: 'CodeInput',
   created() {
     this.combineWinningCode();
-    this.showCodeHistory();
+    this.updateCodeHistory();
     this.getAllPossibleCodes();
   },
   data: () => ({
@@ -95,7 +99,7 @@ export default {
     },
     checkCodes: function () {
       if (this.inputValuesCombined === this.winningCodesCombined) {
-        return (this.feedbackText = 'yay you are a winner!!');
+        return (this.feedbackText = WINNER_TEXT);
       } else {
         this.totalCorrect = 0;
         for (var i = 0; i < 5; i++) {
@@ -103,12 +107,12 @@ export default {
             this.totalCorrect++;
           }
         }
-        this.feedbackText = `${this.totalCorrect} numbers are correct! please try again`;
+        this.feedbackText = `${this.totalCorrect} ` + TRY_AGAIN_TEXT;
         return this.totalCorrect;
       }
     },
-    showCodeHistory: function () {
-      this.codeHistory = localStorage.getItem('Code history');
+    updateCodeHistory: function () {
+      return (this.codeHistory = localStorage.getItem(CODE_HISTORY));
     },
     getAllPossibleCodes: function () {
       for (let i = 0; i <= 99999; i++) {
@@ -129,12 +133,12 @@ export default {
             this.possibleCodes.push(i);
         }
       }
-      // daarna verifieren tegen ingevulde codes en alleen tonen welke nog niet zijn ingevuld
     },
+    filterCodeOptions: function () {},
     storeInputCodes: function () {
       if (window.localStorage) {
         this.storedInputValues.push(this.inputValuesCombined);
-        localStorage.setItem('Code history', this.storedInputValues);
+        localStorage.setItem(CODE_HISTORY, this.storedInputValues);
       }
     },
     clearForm() {
@@ -146,7 +150,7 @@ export default {
       this.combineInputValues();
       this.storeInputCodes();
       this.checkCodes();
-      this.showCodeHistory();
+      this.updateCodeHistory();
       // if (this.inputValuesCombined !== '') {
       //   this.validatedCodeText = `gevalideerd! met cijfers: ${this.inputValuesCombined}`;
       // }
