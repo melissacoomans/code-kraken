@@ -34,7 +34,15 @@
     <br />
     <br />
     <span><b>This is your code history: </b></span>
-    <span v-for="code in storedInputValues" :key="code">{{ code }}, </span>
+    <br />
+    <span> {{ codeHistory }}</span>
+    <!-- <span v-for="code in storedInputValues" :key="code">{{ code }}, </span> -->
+
+    <br />
+    <br />
+    <span><b>All possible options: </b></span>
+    <br />
+    <span> {{ possibleCodes }}</span>
 
     <!-- <span v-for="number in winningCode" :key="number">{{ number }}</span> -->
   </v-form>
@@ -45,16 +53,20 @@ export default {
   name: 'CodeInput',
   created() {
     this.combineWinningCode();
+    this.showCodeHistory();
+    this.getAllPossibleCodes();
   },
   data: () => ({
     valid: true,
     submittedCodes: ['99999'],
     storedInputValues: [],
     chosenInputValues: [],
+    codeHistory: '',
     possibleCodes: [],
     winningCode: ['1', '2', '3', '4', '5'],
     feedbackText: '',
     codeRules: [(v) => !!v || 'code is required'],
+    // codeRules: [(v) => (!!v && v.length <= 1) || 'code is required'],
     inputValuesCombined: '',
     winningCodesCombined: '',
     validatedCodeText: '',
@@ -91,17 +103,37 @@ export default {
             this.totalCorrect++;
           }
         }
-        this.feedbackText = `Je hebt er ${this.totalCorrect} goed! probeer het nog een keer`;
+        this.feedbackText = `${this.totalCorrect} numbers are correct! please try again`;
         return this.totalCorrect;
       }
     },
-    verifyPossibleCodes: function () {},
+    showCodeHistory: function () {
+      this.codeHistory = localStorage.getItem('Code history');
+    },
+    getAllPossibleCodes: function () {
+      for (let i = 0; i <= 99999; i++) {
+        console.log(i.toString().length, 'length 1');
+        if (i.toString().length === 1) {
+          this.possibleCodes.push('0000' + i);
+        }
+        if (i.toString().length === 2) {
+          this.possibleCodes.push('000' + i);
+        }
+        if (i.toString().length === 3) {
+          this.possibleCodes.push('00' + i);
+        }
+        if (i.toString().length === 4) {
+          this.possibleCodes.push('0' + i);
+        } else {
+          this.possibleCodes.push(i);
+        }
+      }
+      // daarna verifieren tegen ingevulde codes en alleen tonen welke nog niet zijn ingevuld
+    },
     storeInputCodes: function () {
       if (window.localStorage) {
         this.storedInputValues.push(this.inputValuesCombined);
         localStorage.setItem('Code history', this.storedInputValues);
-      } else {
-        return;
       }
     },
     clearForm() {
@@ -109,11 +141,12 @@ export default {
       this.validatedCodeText = undefined;
     },
     validate() {
-      this.$refs.form.validate();
-      this.combineInputValues();
-      this.storeInputCodes();
-      this.checkCodes();
-      this.verifyPossibleCodes();
+      // this.$refs.form.validate();
+      // this.combineInputValues();
+      // this.storeInputCodes();
+      // this.checkCodes();
+      // this.showCodeHistory();
+      // this.verifyPossibleCodes();
       // if (this.inputValuesCombined !== '') {
       //   this.validatedCodeText = `gevalideerd! met cijfers: ${this.inputValuesCombined}`;
       // }
