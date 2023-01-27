@@ -2,6 +2,7 @@
   <v-form ref="form" v-model="valid" lazy-validation class="text-center">
     <v-col>
       <!-- Option 1 seperate inputs: each input is clearable, not working: type=number and jumping to next input after inserting a number -->
+      <!-- TODO: option to paste code and add to inputs (same as otp input)-->
       <v-text-field
         v-for="index in 5"
         :key="index"
@@ -18,13 +19,14 @@
 
     <!-- Option 2 otp input: Each input is not clearable, focus on validate button is missing, TypeError, after I implemented option 1 I found this component -->
     <!-- <v-otp-input
-        length="5"
-        :rules="codeRules"
-        v-model="chosenInputValues"
-        outlined
-        required
-      ></v-otp-input> -->
+      length="5"
+      :rules="codeRules"
+      v-model="chosenInputValues"
+      outlined
+      required
+    ></v-otp-input> -->
 
+    <!-- TODO: focus on validate after input is filled-->
     <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate">
       Validate
     </v-btn>
@@ -34,21 +36,24 @@
     <span v-if="feedbackText">{{ feedbackText }}</span>
     <br />
     <br />
-    <!-- TODO: create link for each possible code to insert code in input -->
     <!-- TODO: move to separate components -->
     <v-expansion-panels>
       <v-expansion-panel>
         <v-expansion-panel-header> Code History </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <span v-if="storedInputValues">{{ storedInputValues }}</span>
-          <span v-if="!storedInputValues">{{ noCodeHistoryText }}</span>
+          <span v-for="val in storedInputValues" :key="val"> {{ val }}, </span>
+          <span v-if="!storedInputValues.length">{{ noCodeHistoryText }}</span>
         </v-expansion-panel-content>
       </v-expansion-panel>
       <v-expansion-panel>
-        <v-expansion-panel-header> Optional Codes </v-expansion-panel-header>
+        <v-expansion-panel-header> Possible Codes </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <span v-if="possibleCodes">{{ possibleCodes }}</span>
-          <span v-if="!possibleCodes">{{ noCodesText }}</span>
+          <template>
+            <!-- TODO: create links and add to input -->
+            <span v-for="code in possibleCodes" :key="code">
+              {{ code }} ,
+            </span>
+          </template>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -62,7 +67,8 @@ const REQUIRED = 'code is required';
 const CODE_HISTORY = 'Code history';
 const WINNER_TEXT = 'Yay you are a winner!!';
 const TRY_AGAIN_TEXT = `numbers are correct! Please try again`;
-const NO_CODE_HISTORY_TEXT = 'Please fill in a number';
+const NO_CODE_HISTORY_TEXT =
+  "You haven't tried any numbers yet, please fill in a number";
 const NO_CODES_AVAILABLE =
   'No optional codes available, please try again later';
 
@@ -128,7 +134,12 @@ export default {
       }
     },
     updateCodeHistory: function () {
-      return (this.codeHistory = localStorage.getItem(CODE_HISTORY));
+      if (this.codeHistory) {
+        console.log('test');
+        return (this.codeHistory = localStorage.getItem(CODE_HISTORY));
+      } else {
+        return (this.noCodeHistoryText = NO_CODE_HISTORY_TEXT);
+      }
     },
     getAllPossibleCodes: function () {
       for (let i = 0; i <= 99999; i++) {
@@ -149,7 +160,8 @@ export default {
             this.possibleCodes.push(i);
             break;
           default:
-            return !this.possibleCodes;
+            !this.possibleCodes;
+            this.noCodesText = NO_CODES_AVAILABLE;
         }
       }
     },
@@ -220,6 +232,11 @@ export default {
     display: inline-block;
     padding: 6px;
     max-width: 20%;
+  }
+}
+@media only screen and (min-width: 600px) {
+  .v-input {
+    max-width: 12%;
   }
 }
 </style>
