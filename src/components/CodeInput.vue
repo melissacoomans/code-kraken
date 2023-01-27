@@ -1,8 +1,7 @@
 <template>
   <v-form ref="form" v-model="valid" lazy-validation class="text-center">
     <v-col>
-      <!-- TODO: MAXLENGTH DOESNT WORK WITH TYPE=NUMBER FOR NOW TYPE=TEXT -->
-      <!-- TODO: JUMP TO NEXT INPUT AFTER INSERTING ONE DIGID IN INPUT -->
+      <!-- Option 1 seperate inputs: each input is clearable, not working: type=number and jumping to next input after inserting a number -->
       <v-text-field
         v-for="index in 5"
         :key="index"
@@ -17,6 +16,15 @@
       ></v-text-field>
     </v-col>
 
+    <!-- Option 2 otp input: Each input is not clearable, focus on validate button is missing, TypeError, after I implemented option 1 I found this component -->
+    <!-- <v-otp-input
+        length="5"
+        :rules="codeRules"
+        v-model="chosenInputValues"
+        outlined
+        required
+      ></v-otp-input> -->
+
     <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate">
       Validate
     </v-btn>
@@ -27,16 +35,16 @@
     <span v-if="feedbackText">{{ feedbackText }}</span>
     <br />
     <br />
-    <!-- TODO: MOVE TO SEPARATE COMPONENT -->
+    <!-- TODO: move to separate component -->
     <span><b>This is your code history: </b></span>
     <br />
     <!-- <span> {{ codeHistory }}</span>  -->
     <span> {{ storedInputValues }}</span>
     <br />
     <br />
-    <!-- TODO: MAKE LIST PRETTIER: OPTION TO OPEN AND CLOSE -->
-    <!-- TODO: LINK FOR EACH CODE TO FILL INPUT WITH FIRST POSSIBLE CODE IN THE LIST -->
-    <!-- TODO: MOVE TO SEPARATE COMPONENT -->
+    <!-- TODO: make list prettier: option to open and close-->
+    <!-- TODO: create link for each possible code to insert code in input -->
+    <!-- TODO: move to separate component -->
     <span><b>All possible options: </b></span>
     <br />
     <span> {{ possibleCodes }}</span>
