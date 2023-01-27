@@ -28,33 +28,43 @@
     <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate">
       Validate
     </v-btn>
-
     <v-btn color="error" class="mr-4" @click="reset"> Clear Form </v-btn>
     <br />
     <br />
     <span v-if="feedbackText">{{ feedbackText }}</span>
     <br />
     <br />
-    <!-- TODO: move to separate component -->
-    <span><b>This is your code history: </b></span>
-    <br />
-    <!-- <span> {{ codeHistory }}</span>  -->
-    <span> {{ storedInputValues }}</span>
-    <br />
-    <br />
-    <!-- TODO: make list prettier: option to open and close-->
     <!-- TODO: create link for each possible code to insert code in input -->
-    <!-- TODO: move to separate component -->
-    <span><b>All possible options: </b></span>
+    <!-- TODO: move to separate components -->
+    <v-expansion-panels>
+      <v-expansion-panel>
+        <v-expansion-panel-header> Code History </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <span v-if="storedInputValues">{{ storedInputValues }}</span>
+          <span v-if="!storedInputValues">{{ noCodeHistoryText }}</span>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+      <v-expansion-panel>
+        <v-expansion-panel-header> Optional Codes </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <span v-if="possibleCodes">{{ possibleCodes }}</span>
+          <span v-if="!possibleCodes">{{ noCodesText }}</span>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
     <br />
-    <span> {{ possibleCodes }}</span>
+    <br />
   </v-form>
 </template>
 
 <script>
-export const CODE_HISTORY = 'Code history';
-export const WINNER_TEXT = 'Yay you are a winner!!';
-export const TRY_AGAIN_TEXT = `numbers are correct! Please try again`;
+const REQUIRED = 'code is required';
+const CODE_HISTORY = 'Code history';
+const WINNER_TEXT = 'Yay you are a winner!!';
+const TRY_AGAIN_TEXT = `numbers are correct! Please try again`;
+const NO_CODE_HISTORY_TEXT = 'Please fill in a number';
+const NO_CODES_AVAILABLE =
+  'No optional codes available, please try again later';
 
 export default {
   name: 'CodeInput',
@@ -70,13 +80,15 @@ export default {
     chosenInputValues: [],
     codeHistory: '',
     possibleCodes: [],
-    //TODO: FETCH WINNING CODE FROM BACKEND
+    //TODO: fetch code from backend, create json
     winningCode: ['1', '2', '3', '4', '5'],
     feedbackText: '',
-    codeRules: [(v) => !!v || 'code is required'],
+    codeRules: [(v) => !!v || REQUIRED],
     inputValuesCombined: '',
     winningCodesCombined: '',
     validatedCodeText: '',
+    noCodesText: NO_CODES_AVAILABLE,
+    noCodeHistoryText: NO_CODE_HISTORY_TEXT,
     totalCorrect: 0,
   }),
   methods: {
@@ -109,7 +121,7 @@ export default {
           if (this.chosenInputValues[i] === this.winningCode[i]) {
             this.totalCorrect++;
           }
-          //TODO: REMOVE INCORRECT NUMBERS FROM POSSIBLE CODES ARRAY
+          //TODO: remove incorrect numbers from possible codes array
         }
         this.feedbackText = `${this.totalCorrect} ` + TRY_AGAIN_TEXT;
         return this.totalCorrect;
@@ -135,21 +147,24 @@ export default {
             break;
           case i.toString().length === 5:
             this.possibleCodes.push(i);
+            break;
+          default:
+            return !this.possibleCodes;
         }
       }
     },
     filterPossibleCodes: function () {
-      // VERSION 1
+      // Version 1
       var index = this.possibleCodes.indexOf(this.inputValuesCombined);
       if (index > -1) {
-        // BUG: SPLICE DOESNT WORK WITH NUMBERS ABOVE 09999
+        // Bug: splice doesnt work with numbers above 09999
         this.possibleCodes.splice(index, 1);
       }
-      // VERSION 2
+      // Version 2
       // for (let i = 0; i < this.possibleCodes.length; i++) {
       //   if (this.inputValuesCombined === this.possibleCodes[i]) {
       //     if (i > -1) {
-      //       // BUG: SPLICE DOESNT WORK WITH NUMBERS ABOVE 09999
+      //         // Bug: splice doesnt work with numbers above 09999
       //       this.possibleCodes.splice(i, 1);
       //     }
       //     break;
@@ -182,14 +197,29 @@ export default {
 };
 </script>
 <style lang="scss">
-//TODO: MEDIA QUERIES FOR MOBILE, TABLET AND DESKTOP
+//TODO: add all media queries, for now
 .v-input {
   display: inline-block;
   padding: 6px;
-  // max-width: 5%;
-  max-width: 20%;
+  max-width: 15%;
 }
 .v-text-field.v-text-field--enclosed {
   padding: 6px;
+}
+
+// quick solution for mobile
+@media only screen and (max-width: 600px) {
+  .v-text-field.v-text-field--enclosed .v-text-field__details {
+    display: none;
+  }
+  .v-text-field .v-input__icon--clear {
+    display: none;
+  }
+
+  .v-input {
+    display: inline-block;
+    padding: 6px;
+    max-width: 20%;
+  }
 }
 </style>
