@@ -27,13 +27,16 @@
     <span v-if="feedbackText">{{ feedbackText }}</span>
     <br />
     <br />
+    <!-- TODO: MOVE TO SEPARATE COMPONENT -->
     <span><b>This is your code history: </b></span>
     <br />
-    <span> {{ codeHistory }}</span>
+    <!-- <span> {{ codeHistory }}</span>  -->
+    <span> {{ storedInputValues }}</span>
     <br />
     <br />
     <!-- TODO: MAKE LIST PRETTIER: OPTION TO OPEN AND CLOSE -->
-    <!-- TODO: BUTTON TO FILL INPUT WITH FIRST POSSIBLE CODE IN THE OPTIONS LIST -->
+    <!-- TODO: LINK FOR EACH CODE TO FILL INPUT WITH FIRST POSSIBLE CODE IN THE LIST -->
+    <!-- TODO: MOVE TO SEPARATE COMPONENT -->
     <span><b>All possible options: </b></span>
     <br />
     <span> {{ possibleCodes }}</span>
@@ -51,6 +54,7 @@ export default {
     this.combineWinningCode();
     this.updateCodeHistory();
     this.getAllPossibleCodes();
+    this.filterPossibleCodes();
   },
   data: () => ({
     valid: true,
@@ -97,6 +101,7 @@ export default {
           if (this.chosenInputValues[i] === this.winningCode[i]) {
             this.totalCorrect++;
           }
+          //TODO: REMOVE INCORRECT NUMBERS FROM POSSIBLE CODES ARRAY
         }
         this.feedbackText = `${this.totalCorrect} ` + TRY_AGAIN_TEXT;
         return this.totalCorrect;
@@ -125,7 +130,24 @@ export default {
         }
       }
     },
-    filterCodeOptions: function () {},
+    filterPossibleCodes: function () {
+      // VERSION 1
+      var index = this.possibleCodes.indexOf(this.inputValuesCombined);
+      if (index > -1) {
+        // BUG: SPLICE DOESNT WORK WITH NUMBERS ABOVE 09999
+        this.possibleCodes.splice(index, 1);
+      }
+      // VERSION 2
+      // for (let i = 0; i < this.possibleCodes.length; i++) {
+      //   if (this.inputValuesCombined === this.possibleCodes[i]) {
+      //     if (i > -1) {
+      //       // BUG: SPLICE DOESNT WORK WITH NUMBERS ABOVE 09999
+      //       this.possibleCodes.splice(i, 1);
+      //     }
+      //     break;
+      //   }
+      // }
+    },
     storeInputCodes: function () {
       if (window.localStorage) {
         this.storedInputValues.push(this.inputValuesCombined);
@@ -141,6 +163,7 @@ export default {
       this.combineInputValues();
       this.storeInputCodes();
       this.checkCodes();
+      this.filterPossibleCodes();
       this.updateCodeHistory();
     },
     reset() {
